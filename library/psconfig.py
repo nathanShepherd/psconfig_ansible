@@ -29,6 +29,7 @@ def main():
     #from ansible.module_utils.cisco_imc import ImcConnection
     #from imcsdk.apis.server.inventory import inventory_get
     module = AnsibleModule(
+        no_log=False,
         argument_spec=dict(
             # Module parameters
             publish	= dict(required=False, type='str'),
@@ -39,15 +40,21 @@ def main():
         ),
         supports_check_mode=False
     )
-    #module.debug("Debug msg") 
-    #module.log("Message here")
+    #module.debug("Debug msg")  #does nothing
+    #module.log("Message here") #does nothing
     outs = module.run_command("psconfig publish " + module.params["publish"])
 
     #module.exit_json(ansible_facts=dict())
     #module.fail_json(msg="Something fatal happened") 
+    if outs[0] != 0:
+        module.fail_json(msg=outs[2])
+
+    #print("MSg pnt console") #does nothing
+
     module.exit_json(changed=True, 
                      published=module.params["publish"],
-                     result=outs)
+                     result=outs, 
+		     _help=help(module))
 
 if __name__ == '__main__':
     main()
