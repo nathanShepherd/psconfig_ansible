@@ -33,7 +33,8 @@ def main():
         argument_spec=dict(
             # Module parameters
             publish	= dict(required=False, type='str'),
-            username	= dict(required=False, default="admin", type='str'),
+            remote_add  = dict(required=False, type='str'),
+            remote_delete  = dict(required=False, type='str'),
             port	= dict(required=False, default=None),
             secure	= dict(required=False, default=None),
             proxy	= dict(required=False, default=None)
@@ -42,19 +43,31 @@ def main():
     )
     #module.debug("Debug msg")  #does nothing
     #module.log("Message here") #does nothing
-    outs = module.run_command("psconfig publish " + module.params["publish"])
-
+    STDOUT = []
+    for command in module.params:
+        if module.params[command] is not None:
+            orig = command
+            command = ""
+            if orig != "publish":
+                for cmd in command.split("_"):
+                    command += cmd + " "
+            else:
+                command = orig + " " 
+            outs = module.run_command("psconfig " + command + module.params[orig])
+            if outs[0] != 0:
+                module.fail_json(msg=outs[2])
+            STDOUT.append(outs)
     #module.exit_json(ansible_facts=dict())
     #module.fail_json(msg="Something fatal happened") 
-    if outs[0] != 0:
-        module.fail_json(msg=outs[2])
+
+
 
     #print("MSg pnt console") #does nothing
 
     module.exit_json(changed=True, 
                      published=module.params["publish"],
-                     result=outs, 
-		     _help=help(module))
+                     result=STDOUT, 
+		     debug=module.params)
 
 if __name__ == '__main__':
     main()

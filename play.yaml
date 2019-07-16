@@ -5,6 +5,8 @@
   tasks:
     - psconfig:
         publish: template.json
+        remote_add: https://10.0.0.1/example.json
+        #remote_delete: https://10.0.0.1/example.json
       register: stdout
     - debug:
         var: stdout
