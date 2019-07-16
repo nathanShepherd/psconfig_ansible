@@ -24,6 +24,8 @@ EXAMPLES = '''
     username: "admin"
 '''
 
+#def run_cmd(task, command):
+#    return module.run_command("psconfig " + task +" "+ module.params[command])
 
 def main():
     #from ansible.module_utils.cisco_imc import ImcConnection
@@ -44,19 +46,28 @@ def main():
     #module.debug("Debug msg")  #does nothing
     #module.log("Message here") #does nothing
     STDOUT = []
-    for command in module.params:
-        if module.params[command] is not None:
-            orig = command
-            command = ""
-            if orig != "publish":
-                for cmd in command.split("_"):
-                    command += cmd + " "
-            else:
-                command = orig + " " 
-            outs = module.run_command("psconfig " + command + module.params[orig])
-            if outs[0] != 0:
-                module.fail_json(msg=outs[2])
-            STDOUT.append(outs)
+    result = []
+    run_cmd = lambda x, y: module.run_command("psconfig "+x+" "+module.params[y])
+    #result.append(run_cmd("publish", "publish"))
+            #result.append([0, command])
+
+    if module.params["publish"] is not None:
+        result.append(module.run_command("psconfig publish " + module.params["publish"]))
+
+    if module.params["remote_add"] is not None:
+        result.append(run_cmd("remote add", "remote_add"))
+
+    if module.params["remote_delete"] is not None:
+        result.append(run_cmd("remote delete", "remote_delete"))
+
+  
+  ####  if len(result) != 0 and result[-1][0] != 0:
+  ####      module.fail_json(msg=result)
+  
+
+
+
+            #STDOUT.append(outs)
     #module.exit_json(ansible_facts=dict())
     #module.fail_json(msg="Something fatal happened") 
 
@@ -66,7 +77,7 @@ def main():
 
     module.exit_json(changed=True, 
                      published=module.params["publish"],
-                     result=STDOUT, 
+                     log=result, 
 		     debug=module.params)
 
 if __name__ == '__main__':
