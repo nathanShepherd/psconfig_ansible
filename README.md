@@ -2,15 +2,19 @@
 The perfSonar tool psconfig as a module for ansible.
 
 ### Required software
+
 - Ansible
 ```
 sudo pip install ansible
 ```
+
 - psconfig
-CentOS
+
+CentOS:
 ```
 yum install perfsonar-psconfig-publisher
 ```
+
 Debian/Ubuntu:
 ```
 apt-get install perfsonar-psconfig-publisher
