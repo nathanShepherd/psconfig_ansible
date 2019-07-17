@@ -5,15 +5,11 @@
   tasks:
     - psconfig:
         publish: template.json
-
         #remote_add: https://10.0.0.1/example.json
-
-        remote_delete: https://localhost/example.json
+        #remote_delete: https://example.com/template.json
 
       register: stdout
     - debug:
         var: stdout
-#    - imc_rest:
-#        hostname: http://www.google.com
 
 

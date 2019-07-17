@@ -27,6 +27,18 @@ EXAMPLES = '''
 #def run_cmd(task, command):
 #    return module.run_command("psconfig " + task +" "+ module.params[command])
 
+def run_cmd(m, x, module_x, out):
+    module_x = m.params[module_x]
+    cmd = "psconfig "+ x +" "+ module_x
+    res = m.run_command(cmd)
+
+    if res[0] != 0:
+        res = [res[0], "Error with " + cmd, res[2]]
+        m.fail_json(stderr=out + res)
+
+    res = [res[0], cmd, res[1]]
+    out.append(res)
+
 def main():
     #from ansible.module_utils.cisco_imc import ImcConnection
     #from imcsdk.apis.server.inventory import inventory_get
@@ -37,48 +49,36 @@ def main():
             publish	= dict(required=False, type='str'),
             remote_add  = dict(required=False, type='str'),
             remote_delete  = dict(required=False, type='str'),
-            port	= dict(required=False, default=None),
-            secure	= dict(required=False, default=None),
-            proxy	= dict(required=False, default=None)
+            #proxy	= dict(required=False, default=None)
         ),
         supports_check_mode=False
     )
+    #print("MSg pnt console") #does nothing
     #module.debug("Debug msg")  #does nothing
     #module.log("Message here") #does nothing
-    STDOUT = []
+
     result = []
-    run_cmd = lambda x, y: module.run_command("psconfig "+x+" "+module.params[y])
-    #result.append(run_cmd("publish", "publish"))
-            #result.append([0, command])
 
     if module.params["publish"] is not None:
-        result.append(module.run_command("psconfig publish " + module.params["publish"]))
+        run_cmd(module, "publish", "publish", result)
 
     if module.params["remote_add"] is not None:
-        result.append(run_cmd("remote add", "remote_add"))
+        run_cmd(module, "remote add", "remote_add", result)
 
     if module.params["remote_delete"] is not None:
-        result.append(run_cmd("remote delete", "remote_delete"))
+        run_cmd(module, "remote delete", "remote_delete", result)
 
-  
-  ####  if len(result) != 0 and result[-1][0] != 0:
-  ####      module.fail_json(msg=result)
-  
-
-
-
-            #STDOUT.append(outs)
     #module.exit_json(ansible_facts=dict())
     #module.fail_json(msg="Something fatal happened") 
 
 
 
-    #print("MSg pnt console") #does nothing
 
-    module.exit_json(changed=True, 
-                     published=module.params["publish"],
-                     log=result, 
-		     debug=module.params)
+    module.exit_json(log=result, 
+                     changed=(len(result) > 0), 
+                     invocations=module.params,
+                     published=module.run_command("psconfig published"),
+                     remote_list=module.run_command("psconfig remote list"))
 
 if __name__ == '__main__':
     main()
