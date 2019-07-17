@@ -21,7 +21,7 @@ sudo python install.py
 ```
 
 ## Usage
-play.yml acts a an example to highlight the capabilities of the module.
+play.yml acts as an example to highlight the capabilities of the module.
 ```
 ansible-playbook play.yml
 ```
