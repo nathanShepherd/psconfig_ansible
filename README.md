@@ -9,14 +9,12 @@ sudo pip install ansible
 ```
 
 - psconfig
-
+```
 CentOS:
-```
 yum install perfsonar-psconfig-publisher
-```
+
 
 Debian/Ubuntu:
-```
 apt-get install perfsonar-psconfig-publisher
 ```
 
