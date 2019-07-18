@@ -28,7 +28,6 @@ EXAMPLES = '''
 #    return module.run_command("psconfig " + task +" "+ module.params[command])
 
 def run_cmd(m, x, module_x, out):
-    module_x = m.params[module_x]
     cmd = "psconfig "+ x +" "+ module_x
     res = m.run_command(cmd)
 
@@ -46,9 +45,9 @@ def main():
         no_log=False,
         argument_spec=dict(
             # Module parameters
+            # TODO change (publish and remote) --> command: {p:, r:}
             publish	= dict(required=False, type='str'),
-            remote_add  = dict(required=False, type='str'),
-            remote_delete  = dict(required=False, type='str'),
+            remote  = dict(required=False, type='dict'),
             #proxy	= dict(required=False, default=None)
         ),
         supports_check_mode=False
@@ -58,27 +57,26 @@ def main():
     #module.log("Message here") #does nothing
 
     result = []
+    param = module.params
 
-    if module.params["publish"] is not None:
-        run_cmd(module, "publish", "publish", result)
+    if param["publish"] is not None:
+        run_cmd(module, "publish", param["publish"], result)
+        _url = result[0][2].split("\"")[-2]
 
-    if module.params["remote_add"] is not None:
-        run_cmd(module, "remote add", "remote_add", result)
-
-    if module.params["remote_delete"] is not None:
-        run_cmd(module, "remote delete", "remote_delete", result)
+    if param["remote"] is not None:
+        if "add" in param["remote"]:
+            run_cmd(module, "remote add", param["remote"]["add"], result)
+        if "delete" in param["remote"]:                                           
+            run_cmd(module, "remote delete", param["remote"]["delete"], result)
 
     #module.exit_json(ansible_facts=dict())
     #module.fail_json(msg="Something fatal happened") 
 
 
-
-
-    module.exit_json(log=result, 
+    module.exit_json(log=result,
                      changed=(len(result) > 0), 
                      invocations=module.params,
-                     published=module.run_command("psconfig published"),
-                     remote_list=module.run_command("psconfig remote list"))
+                     ansible_facts=dict(url=_url))
 
 if __name__ == '__main__':
     main()
