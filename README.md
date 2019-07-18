@@ -13,7 +13,6 @@ sudo pip install ansible
 CentOS:
 yum install perfsonar-psconfig-publisher
 
-
 Debian/Ubuntu:
 apt-get install perfsonar-psconfig-publisher
 ```
