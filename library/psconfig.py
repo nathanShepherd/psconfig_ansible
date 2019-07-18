@@ -34,7 +34,7 @@ def run_cmd(m, x, module_x, out):
 
     if res[0] != 0:
         res = [res[0], "Error with " + cmd, res[2]]
-        m.fail_json(stderr=out + res)
+        m.fail_json(msg=out + res)
 
     res = [res[0], cmd, res[1]]
     out.append(res)
