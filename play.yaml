@@ -4,7 +4,8 @@
   hosts: localhost
   tasks:
     - psconfig:
-        publish: template.json
+        publish:
+            file: template.json
         remote:
             #add: https://141.213.169.8/psconfig/template.json
             #delete: https://example.com/template.json

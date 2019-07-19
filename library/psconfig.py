@@ -45,9 +45,9 @@ def main():
         no_log=False,
         argument_spec=dict(
             # Module parameters
-            # TODO change (publish and remote) --> command: {p:, r:}
-            publish	= dict(required=False, type='str'),
-            remote  = dict(required=False, type='dict'),
+            # TODO change (publish and remote) --> command: {p:, r:}          
+            remote	= dict(required=False, type='dict'),
+            publish	= dict(required=False, type='dict'),
             #proxy	= dict(required=False, default=None)
         ),
         supports_check_mode=False
@@ -60,7 +60,7 @@ def main():
     param = module.params
 
     if param["publish"] is not None:
-        run_cmd(module, "publish", param["publish"], result)
+        run_cmd(module, "publish", param["publish"]["file"], result)
         _url = result[0][2].split("\"")[-2]
 
     if param["remote"] is not None:
